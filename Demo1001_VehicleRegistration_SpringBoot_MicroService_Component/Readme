@@ -1,0 +1,22 @@
+https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
+
+Execution steps:
+----------------
+http://localhost:8090/vehicle/controller/getAllVehicleRegistrations
+http://localhost:8090/vehicle/controller/getVehicleByRegistrationNo/TS10EA1001
+http://localhost:8090/vehicle/controller/registerVehicle
+{
+        "vehicleType": "Four-Wheeler",
+        "ownerName": "Rinkesh",
+        "address": "Hyderabad-Telangana",
+        "manufacturingYear": 2020
+}
+http://localhost:8090/vehicle/controller/updateVehicleRegistration
+{
+        "vehicleType": "Two-Wheeler",
+        "registrationNumber": "TS10EA1001",
+        "ownerName": "JagadishSanjeevi",
+        "address": "Hyderabad-Telangana",
+        "manufacturingYear": 2013
+}
+http://localhost:8090/vehicle/controller/removeVehicleRegistration/TS10EA1002

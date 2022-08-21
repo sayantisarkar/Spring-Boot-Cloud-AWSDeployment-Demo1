@@ -1,0 +1,181 @@
+Spring Boot Microservice component deployment on AWS EC2 and S3 
+Session Agenda:
+---------------
+Deploy a Spring boot microservice component on AWS environment and build an ECO system around the component using 
+AWS inhouse services like S3, EC2, IAM roles, AMI, Load balancer[Application LB]. 
+ 
+Single Deployment  - 50000 ->  Fault Tolerance 
+
+AMI - Machine Image  - 4 EC2 
+
+Multiple Deployments
+Load Balancer with Health Checks 
+
+10 ec2 Running  5 terminate -> all time availbility 
+
+softwares links:
+----------------
+java 8, Eclipse 
+https://aws.amazon.com/free
+https://puttygen.in/
+https://www.puttygen.com/download-putty
+
+Microservices
+-------------
+https://microservices.io/
+
+Microservices - also known as the microservice architecture - is an architectural style that structures an 
+application as a collection of services that are
+
+Highly maintainable and testable
+Loosely coupled
+Independently deployable
+Organized around business capabilities
+Owned by a small team
+
+
+https://spring.io/images/diagram-microservices-88e01c7d34c688cb49556435c130d352.svg
+
+In Employee mangement System case study: 
+-----------------------------------------
+https://kxdocuments.accenture.com/contribution/16de198d-0234-4a55-955b-e05770a34959
+
+
+
+monolithics  (All code and modules in single jar/war/ear) were lacking following design principles:
+===================================================================================================
+	Cohesive - SRP
+	Autnomous/Loosely Coupling
+	BusinessDomain centric.
+	Resilience
+	Observable 
+	Automation Tools for CICD
+
+To evolve on Monolithic architecture, Twelve-Factor app was published by Heroku co-founder Adam Wiggins in 2011
+According to these principles, In the modern era, 
+software is commonly delivered as a service: called web apps, or software-as-a-service. 
+For Further Reading, Refer following Links:
+https://12factor.net/
+https://en.wikipedia.org/wiki/Twelve-Factor_App_methodology
+
+
+
+In March 2012, James Lewis presented a case study Micro services - Java, the Unix Way at 33rd Degree in Krakow.
+
+Adrian Cockcroft at Netflix, describing this approach as "fine grained SOA" was pioneering the style at web scale.
+
+
+Following were the finalized characteristics of Microservice Architecture:
+	Componentization via Services
+	Organized around Business Capabilities
+	Products not Projects
+	Smart endpoints and dumb pipes
+	Decentralized Governance
+	Decentralized Data Management/Polyglot Persistence
+	Infrastructure Automation
+	Design for failure
+	Evolutionary Design
+
+For Further Reading, Refer the links given below:
+Source: https://martinfowler.com/microservices/
+Details: https://martinfowler.com/articles/microservices.html
+Details: https://en.wikipedia.org/wiki/Microservices
+Principles: https://en.wikipedia.org/wiki/Twelve-Factor_App_methodology
+Bounded Context: https://martinfowler.com/bliki/BoundedContext.html
+PolyGlot Persistence: https://martinfowler.com/bliki/PolyglotPersistence.html
+When to use microservices: https://martinfowler.com/articles/microservice-trade-offs.html
+
+Spring Boot + Spring Rest is used to create the MSC (microservice component)
+--------------------------------------------------------------
+Refer the controller method coded for the health check done by the Application load balancer:
+----------------------------------------------------------------------------------------------
+@RequestMapping(value="index.html",method=RequestMethod.GET,produces=MediaType.TEXT_HTML_VALUE)
+public ResponseEntity<String> index(){
+
+	return new ResponseEntity<String>("<center><h2>It works!!</h2></center>", HttpStatus.OK);
+}									
+
+Fat Jar - Target folder - java -jar <filename>.jar
+
+s3 - Simple Storage Service 
+
+S3 bucket details:
+------------------
+bucket08051990   private 
+Spring_Boot_S3_Deployment.jar
+
+Virtual Machine on the Cloud 
+
+Elastic Cloud Compute:
+
+EC2 Should be able to access the Jar file in the S3 bucket -> ROLE(s3 full access) and attach the Role to the EC2 Instance 
+
+pem ->  ppk 
+
+putty requires ppk to convert pem -> ppk file i will use puttygen
+
+Ec2 Instance Bootstrap Script:
+------------------------------
+#!/bin/bash
+sudo su –
+apt-get -y update
+apt install -y openjdk-8-jre-headless
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+apt install unzip
+unzip awscliv2.zip
+./aws/install
+./aws/install -i /usr/local/aws-cli -b /usr/local/bin --update
+
+Commands to execute after SSH:
+------------------------------
+java -version						
+aws –version				
+aws s3 ls				
+aws s3 ls s3://bucketname
+mkdir dirname
+aws s3 cp s3://bucketname/jarfilename ./dir/jarfilename
+
+Reference links:
+----------------
+https://en.wikipedia.org/wiki/Privacy-Enhanced_Mail
+https://www.reviversoft.com/file-extensions/ppk
+https://aws.amazon.com/premiumsupport/knowledge-center/convert-pem-file-into-ppk/
+
+https://en.wikipedia.org/wiki/Secure_Shell
+
+https://aws.amazon.com/what-is-aws/
+https://aws.amazon.com/s3/
+https://aws.amazon.com/ec2/
+https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html
+https://aws.amazon.com/elasticloadbalancing
+
+
+Steps
+-----
+Agenda
+Deploy a Spring boot microservice component on AWS environment and build an ECO system around the component using AWS inhouse services like S3, Load balancer and Route 53. 
+Single Deployment
+-----------------
+1.	To demonstrate the deployment of spring boot micro service component fat jar on AWS Environment.
+2.	Build the fat jar using maven goal and uploaded it to the AWS S3 bucket.
+3.	Provision a free tier EC2 instances with ubuntu 18.04 OS, bootstrap script to install Java 8 and AWS CLI 2.0 version.
+4.	Create an IAM Role with S3 full access policy and attach the role to EC2 Instance.
+5.	Configure the Security group Inbound rules to access the application running on 8090 server port.
+6.	Using putty SSH to the EC2 instance and verify the Java and AWS CLI installation.
+7.	Using AWS CLI from SSH terminal access the S3 bucket and download the jar file to EC2 Instance.
+8.	Start the deployment of Jar file with java -jar command.
+9.	Access the application rest end point using postman/browser.
+Multiple Deployments
+--------------------
+1.	To handle peak loads, we must provision multiple EC2 Instances so first create an image of existing EC2 Instance.
+2.	Using the image created launch some more [let’s say 2 more] EC2 instances with same IAM role and Security group. [Note: No need to use any bootstrap script again]
+3.	Once instances are provisioned do SSH to the instances and start the deployment of jar file.
+4.	Access the application rest end point using postman/browser.
+Adding Load balancer
+--------------------
+1.	As we have multiple EC2 Instances lets add a Load balancer to distribute the incoming requests.
+2.	Create a new application load balancer and target group with health check configuration.
+3.	Register all the existing EC2 instances as targets for the Target group.
+4.	Check the health status.
+5.	Pick the DNS of the Application load balancer. 
+6.	Access the application rest end point via load balancer
